@@ -19,7 +19,7 @@ Thanks to [rafspiny](https://github.com/rafspiny) for his multiple corrections a
 
 The NIH provides free APIs to build automatic queries, however a relational database could be more efficient.
 
-The aim of this project is to download XML files provided by MEDLINE on a FTP and to build a relational mySQL database with their content.
+The aim of this project is to download XML files provided by MEDLINE on a FTP and to build a relational database with their content.
 
 
 ## Launch
