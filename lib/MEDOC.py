@@ -32,10 +32,8 @@ class MEDOC(object):
         self.parameters = self.config = configparser.ConfigParser()
         self.parameters.read('./configuration.cfg')
         self.regex_gz = re.compile('^pubmed.*.xml.gz$')
-        self.insert_log_path = os.path.join(self.parameters['paths']['program_path'],
-                                       self.parameters['paths']['already_downloaded_files'])
-        self.download_folder = os.path.join(self.parameters['paths']['program_path'],
-                                            self.parameters['paths']['pubmed_data_download'])
+        self.insert_log_path = self.parameters['paths']['already_downloaded_files']
+        self.download_folder = self.parameters['paths']['pubmed_data_download']
         print('\n' * 2)
 
     def create_pubmedDB(self):
