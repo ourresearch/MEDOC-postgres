@@ -30,8 +30,8 @@ The first step is to clone this Github repository on your local machine.
 
 Open a terminal:
 
-	git clone "https://github.com/MrMimic/MEDOC"
-	cd ./MEDOC
+	git clone "https://github.com/Impactstory/MEDOC-postgres"
+	cd ./MEDOC-postgres
 
 ### Setup
 
@@ -39,7 +39,9 @@ Here prerequisites and installation procedures will be discussed.
 
 #### Prerequisites 
 
-XML parsing libraries may be needed. You can install them on any Debian-derived system with:
+XML parsing libraries may be needed. 
+
+You can install them on any Debian-derived system with:
 
 	sudo apt-get install libxml2-dev libxslt1-dev zlib1g-dev
 
@@ -49,62 +51,41 @@ You may also need `python-dev`. You can also install it with the same command:
 
 #### Installation
 
-The second step is to install external dependencies and to cythonize python functions.
+Run the following command from the MEDOC folder.
 
-Thus, run the file *SETUP.py*
+    pip3 install pipenv
+    pip3 install -r requirements.txt
 
-	cd /path/to/MEDOC
-	python3 utils/SETUP.py build_ext --inplace
+(on osx if you get an error you may need to do `unset PYTHONPATH` first, as per [this tip](https://stackoverflow.com/a/44466013/596939) ).
 
-This script will:
+NOTE: If python3 is your default, you do not need to specify `python3` or `pip3` but just use `python` and `pip`.
 
-* Check for pip3 and give command to install it
-* Check for Cython and give command to install it
-* Check for pymysql and give command to install it
-* Check for bs4 and give command to install it
+#### venv
 
-There's no need to Cythonize functions anymore, they've been optimized.
+Run the following command from the MEDOC folder.
 
-**Alternatively** you can exploit the requirements.txt file shipped with the project.
-Simply run the following command from the MEDOC folder.
+    pipenv shell
 
-	pip3 install -r requirements.txt
-
-	bs4==0.0.1
-	beautifulsoup4==4.6.0
-	Cython==0.27.2
-	html5lib==0.999999999
-	lxml==3.5.0
-	PyMySQL==0.7.11
 
 #### Configuration
 
 Before you can run the code, you should take a look at `parameters.json` file and customize it according to your 
-environment.
+environment, and set environment variable DATABASE_URL to match your database connection string.
 
-Plus, if you have already a user to access the DB you wish to create you can change the `schema` file to reflect that.
-You can change the DB_USER and the DB_PASSWORD fields with the following command.
-Suppose your credentials are: my_custom_user/my_secret_password
+It'll look something like this, with your values for all the uppercase parts in the value:
 
-```bash
-export MEDOC_SQL_FILE='database_creation.sql'
-sed -i'' -e "s/\bdb_user\b/my_custom_user/g" $MEDOC_SQL_FILE
-sed -i'' -e "s/\bDB_PASSWORD\b/my_secret_password/g" $MEDOC_SQL_FILE
-```
+    export DATABASE_URL=postgres://USERNAME:PASSWORD@HOST:PORT/YOURDATABASENAME
 
-NOTE: If python3 is your default, you do not need to specify `python3` or `pip3` but just use `python` and `pip`.
 
 ### Launch the programm
 
-Open file 'parameters.json' and change complete path value including your /home/xxx/...
+Open file 'configuration.cfg' and change complete path value including your /home/xxx/...
 
 If your computer has 16Go or more of RAM, you can set '_insert_command_limit_' to '1000' of greater.
 
-Leave database name to '_pubmed_' but change the mySQL password to yours.
-
 Then, simply execute :
 
-	python3 __execution__.py 
+	python3 __medoc__.py 
 
 	
 ### Output

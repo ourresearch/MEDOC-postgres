@@ -35,15 +35,16 @@ if __name__ == '__main__':
     gz_file_list = MEDOC.get_file_list()
 
     for file_to_download in gz_file_list:
-    # for file_to_download in ['baseline/pubmed18n0572.xml.gz']:
+    # for file_to_download in ['../tests/data/pubmed18n0572.xml.gz']:
 
         start_time = time.time()
 
+        # if True:
         if file_to_download not in open(insert_log_path).read().splitlines():
 
             # Step C: download file if not already
             file_downloaded = MEDOC.download(file_name=file_to_download)
-            # file_downloaded = 'pubmed18n0572.xml.gz'
+            # file_downloaded = '../tests/data/pubmed18n0572.xml.gz'
 
             # Step D: extract file
             file_content = MEDOC.extract(file_name=file_downloaded)

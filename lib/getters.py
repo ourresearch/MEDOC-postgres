@@ -12,7 +12,6 @@
 
 
 import sys
-import pymysql.cursors
 from lib.sql_helper import Query_Executor
 
 ''' - - - - - - - - - - - - - -  
@@ -38,9 +37,13 @@ def get_medline_citation(insert_table):
             if field == key:
                 try:
                     # Get "VALUE"
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    if field != "pmid":
+                        value_to_append = "'N/A'"
+                    else:
+                        break
+                        print("error: pmid can't be N/A")
                 # Add it to a list
                 values_medline_citation.append(value_to_append)
     return values_medline_citation, fields_medline_citation
@@ -64,9 +67,9 @@ def get_medline_article_language(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_article_language.append(value_to_append)
     return values_medline_article_language, fields_medline_article_language
 
@@ -90,9 +93,9 @@ def get_medline_article_publication_type(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_article_publication_type.append(value_to_append)
     return values_medline_article_publication_type, fields_medline_article_publication_type
 
@@ -102,16 +105,6 @@ def send_medline_article_publication_type(fields_medline_article_publication_typ
     sql_command = 'INSERT INTO ' + 'medline_article_publication_type' + ' (' + ', '.join(
         fields_medline_article_publication_type) + ') VALUES ' + ', '.join(
         values_tot_medline_article_publication_type) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -128,9 +121,9 @@ def get_medline_author(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_author.append(value_to_append)
     return values_medline_author, fields_medline_author
 
@@ -138,16 +131,6 @@ def get_medline_author(insert_table):
 def send_medline_author(fields_medline_author, values_tot_medline_author, parameters):
     sql_command = 'INSERT INTO ' + 'medline_author' + ' (' + ', '.join(fields_medline_author) + ') VALUES ' + ', '.join(
         values_tot_medline_author) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -163,9 +146,9 @@ def get_medline_chemical_list(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_chemical_list.append(value_to_append)
     return values_medline_chemical_list, fields_medline_chemical_list
 
@@ -173,16 +156,6 @@ def get_medline_chemical_list(insert_table):
 def send_medline_chemical_list(fields_medline_chemical_list, values_tot_medline_chemical_list, parameters):
     sql_command = 'INSERT INTO ' + 'medline_chemical_list' + ' (' + ', '.join(
         fields_medline_chemical_list) + ') VALUES ' + ', '.join(values_tot_medline_chemical_list) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -198,9 +171,9 @@ def get_medline_citation_other_id(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_citation_other_id.append(value_to_append)
     return values_medline_citation_other_id, fields_medline_citation_other_id
 
@@ -208,16 +181,6 @@ def get_medline_citation_other_id(insert_table):
 def send_medline_citation_other_id(fields_medline_citation_other_id, values_tot_medline_citation_other_id, parameters):
     sql_command = 'INSERT INTO ' + 'medline_citation_other_id' + ' (' + ', '.join(
         fields_medline_citation_other_id) + ') VALUES ' + ', '.join(values_tot_medline_citation_other_id) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -233,9 +196,9 @@ def get_medline_citation_subsets(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_citation_subsets.append(value_to_append)
     return values_medline_citation_subsets, fields_medline_citation_subsets
 
@@ -243,16 +206,6 @@ def get_medline_citation_subsets(insert_table):
 def send_medline_citation_subsets(fields_medline_citation_subsets, values_tot_medline_citation_subsets, parameters):
     sql_command = 'INSERT INTO ' + 'medline_citation_subsets' + ' (' + ', '.join(
         fields_medline_citation_subsets) + ') VALUES ' + ', '.join(values_tot_medline_citation_subsets) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -268,9 +221,9 @@ def get_medline_comments_corrections(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_comments_corrections.append(value_to_append)
     return values_medline_comments_corrections, fields_medline_comments_corrections
 
@@ -279,16 +232,6 @@ def send_medline_comments_corrections(fields_medline_comments_corrections, value
                                       parameters):
     sql_command = 'INSERT INTO ' + 'medline_comments_corrections' + ' (' + ', '.join(
         fields_medline_comments_corrections) + ') VALUES ' + ', '.join(values_tot_medline_comments_corrections) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -304,9 +247,9 @@ def get_medline_data_bank(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_data_bank.append(value_to_append)
     return values_medline_data_bank, fields_medline_data_bank
 
@@ -314,16 +257,6 @@ def get_medline_data_bank(insert_table):
 def send_medline_data_bank(fields_medline_data_bank, values_tot_medline_data_bank, parameters):
     sql_command = 'INSERT INTO ' + 'medline_data_bank' + ' (' + ', '.join(
         fields_medline_data_bank) + ') VALUES ' + ', '.join(values_tot_medline_data_bank) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -339,9 +272,9 @@ def get_medline_grant(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_grant.append(value_to_append)
     return values_medline_grant, fields_medline_grant
 
@@ -349,16 +282,6 @@ def get_medline_grant(insert_table):
 def send_medline_grant(fields_medline_grant, values_tot_medline_grant, parameters):
     sql_command = 'INSERT INTO ' + 'medline_grant' + ' (' + ', '.join(fields_medline_grant) + ') VALUES ' + ', '.join(
         values_tot_medline_grant) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -375,9 +298,9 @@ def get_medline_investigator(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_investigator.append(value_to_append)
     return values_medline_investigator, fields_medline_investigator
 
@@ -385,16 +308,6 @@ def get_medline_investigator(insert_table):
 def send_medline_investigator(fields_medline_investigator, values_tot_medline_investigator, parameters):
     sql_command = 'INSERT INTO ' + 'medline_investigator' + ' (' + ', '.join(
         fields_medline_investigator) + ') VALUES ' + ', '.join(values_tot_medline_investigator) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -411,9 +324,9 @@ def get_medline_mesh_heading(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_mesh_heading.append(value_to_append)
     return values_medline_mesh_heading, fields_medline_mesh_heading
 
@@ -421,16 +334,6 @@ def get_medline_mesh_heading(insert_table):
 def send_medline_mesh_heading(fields_medline_mesh_heading, values_tot_medline_mesh_heading, parameters):
     sql_command = 'INSERT INTO ' + 'medline_mesh_heading' + ' (' + ', '.join(
         fields_medline_mesh_heading) + ') VALUES ' + ', '.join(values_tot_medline_mesh_heading) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)
 
 
@@ -447,9 +350,9 @@ def get_medline_personal_name_subject(insert_table):
         for key, value in insert_table['value'].items():
             if field == key:
                 try:
-                    value_to_append = '"' + (list(value)[0]).replace('"', '') + '"'
+                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
                 except:
-                    value_to_append = '"N/A"'
+                    value_to_append = "'N/A'"
                 values_medline_personal_name_subject.append(value_to_append)
     return values_medline_personal_name_subject, fields_medline_personal_name_subject
 
@@ -458,14 +361,4 @@ def send_medline_personal_name_subject(fields_medline_personal_name_subject, val
                                        parameters):
     sql_command = 'INSERT INTO ' + 'medline_personal_name_subject' + ' (' + ', '.join(
         fields_medline_personal_name_subject) + ') VALUES ' + ', '.join(values_tot_medline_personal_name_subject) + ' ;'
-    #~ connection = pymysql.connect(
-        #~ host=parameters['database']['host'],
-        #~ port=int(parameters['database']['port']),
-        #~ user=parameters['database']['user'],
-        #~ password=parameters['database']['password'],
-        #~ database=parameters['database']['database'],
-        #~ cursorclass=pymysql.cursors.DictCursor,
-        #~ charset='utf8mb4',
-        #~ autocommit=True
-    #~ )
     Query_Executor(parameters).execute(sql_command)

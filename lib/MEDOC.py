@@ -20,9 +20,9 @@ import gzip
 import json
 import configparser
 from ftplib import FTP
-import pymysql.cursors
 from bs4 import BeautifulSoup
-
+import urllib.parse
+import psycopg2
 
 class MEDOC(object):
     def __init__(self):
@@ -43,43 +43,42 @@ class MEDOC(object):
 		DATABASE CREATION
 		"""
         print('- ' * 30 + 'DATABASE CREATION')
-        wished_schema_name = self.parameters['database']['database']
         #  Timestamp
         start_time = time.time()
-        #  mySQL connexion
-        connection = pymysql.connect(
-            host=self.parameters.get('database', 'host'),
-            port=self.parameters.getint('database', 'port'),
-            user=self.parameters.get('database', 'user'),
-            password=self.parameters.get('database', 'password'),
-            cursorclass=pymysql.cursors.DictCursor,
-            autocommit=True,
-            init_command='SET ROLE pubmed_role;')
+
+        #  db connexion
+
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+
+        connection = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        connection.autocommit = True
+
         cursor = connection.cursor()
         #~ cursor.execute('')
         #  Check if 'pubmed' db exists, if not, create it by executing SQL file line by line
-        cursor.execute('SHOW DATABASES ;')
-        local_dbNames = []
+        cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
+        local_tables = []
         for row in cursor:
-            local_dbNames.append(row['Database'])
-        if wished_schema_name in local_dbNames:
-            cursor.execute('USE %s ;' % wished_schema_name)
-            cursor.execute('SHOW TABLES ;')
-            print('Database %s already created with tables: ' % wished_schema_name)
-            for row in cursor:
-                print('\t- {}'.format(row['Tables_in_%s' % wished_schema_name]))
+            print(row)
+            local_tables.append(row[0])
+
+        test_table_name = "medline_investigator"  # last tablename in self.parameters['database']['path_to_sql']
+        if test_table_name in local_tables:
+            print('Database already created')
         else:
-            print('Database %s doesn\'t exist. Creation ..' % wished_schema_name)
-            cursor.execute('CREATE DATABASE %s ;' % wished_schema_name)
-            cursor.execute('USE %s ;' % wished_schema_name)
+            print('Database doesn\'t exist. Creation ..')
             print('Sourcing file {}'.format(self.parameters['database']['path_to_sql']))
             for command in open(self.parameters['database']['path_to_sql'], 'r'):
                 if command != '\n' and not command.startswith('#'):
                     cursor.execute(command)
-            print('Database %s created with tables: ' % wished_schema_name)
-            cursor.execute('SHOW TABLES ;')
-            for row in cursor:
-                print('\t- {}'.format(row['Tables_in_%s' % wished_schema_name]))
+            print('Database created')
 
         print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2),
                                                            MEDOC.create_pubmedDB.__name__))
@@ -178,9 +177,15 @@ class MEDOC(object):
         #  Timestamp
         start_time = time.time()
         #  Souping
+
+        # data = "<PubmedArticle>\n" + data.split("<PubmedArticle>")[1]
+        # print(data)
         soup = BeautifulSoup(data, 'lxml')
         articles = soup.find_all('pubmedarticle')
+        # articles = soup
+
         print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2), MEDOC.parse.__name__))
+        # print(articles)
 
         return articles
 

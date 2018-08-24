@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"bs4" = "==0.0.1"
+"beautifulsoup4" = "==4.6.0"
+"html5lib" = "==0.999999999"
+lxml = "==3.5.0"
+"psycopg2" = "==2.7.1"
+Cython = "==0.27.2"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
