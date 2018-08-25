@@ -44,3 +44,19 @@ class Query_Executor:
             errors_log.close()
             # print('{} - {}\n'.format(exception, sql_command))
             print('X', end='', flush=True)
+
+    def select(self, sql_command):
+        connection = self.connection
+        cursor = connection.cursor()
+        try:
+            cursor.execute(sql_command)
+            rows = cursor.fetchall()
+            connection.close()
+            return rows
+
+        except:
+            exception = sys.exc_info()[1]
+            errors_log = open(self.log_file, 'a')
+            errors_log.write('{} - {}\n'.format(exception, sql_command))
+            errors_log.close()
+            # print('{} - {}\n'.format(exception, sql_command))

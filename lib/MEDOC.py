@@ -23,6 +23,7 @@ from ftplib import FTP
 from bs4 import BeautifulSoup
 import urllib.parse
 import psycopg2
+from lib.sql_helper import Query_Executor
 
 this_file_path = os.path.dirname(os.path.realpath(__file__))
 top_level_path = os.path.join(this_file_path, "..")  # depends on where this file is in hierarchy
@@ -123,11 +124,15 @@ class MEDOC(object):
             if re.match(self.regex_gz, file_name) is not None:
                 gz_update.append('updatefiles/' + file_name)
         print('{} files in Medline\'s updates'.format(len(gz_update)))
-        #  If already INSERTED before
-        inserted_log = open(self.insert_log_path, 'r')
-        inserted_list = []
-        for inserted_file_name in inserted_log:
-            inserted_list.append(inserted_file_name)
+
+        #  Check if already INSERTED before
+        parameters = configparser.ConfigParser()
+        parameters.read('./configuration.cfg')
+        rows = Query_Executor(parameters).select("SELECT filename FROM admin_inserted_files")
+        inserted_list = [row[0] for row in rows]
+        print("inserted_list")
+        print(inserted_list)
+
         #  Join baseline + updates if not inserted already
         for baseline_file_name in gz_baseline:
             if baseline_file_name not in inserted_list:
@@ -471,9 +476,14 @@ class MEDOC(object):
         return article_INSERT_list
 
     def remove(self, file_name):
-        inserted_log = open(self.insert_log_path, 'a')
-        inserted_log.write('{}\n'.format(file_name))
-        inserted_log.close()
+        # add to inserted list
+        parameters = configparser.ConfigParser()
+        parameters.read('./configuration.cfg')
+        Query_Executor(parameters).execute("INSERT INTO admin_inserted_files VALUES ('{}'); ".format(file_name))
+
         os.chdir(self.download_folder)
         file_name = re.findall('(.*)/(.*)', file_name)[0][1]
-        os.remove('./' + file_name)
+        try:
+            os.remove('./' + file_name)
+        except FileNotFoundError:
+            print("tried to delete file {} but wasn't there".format(file_name))
