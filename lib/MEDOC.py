@@ -24,6 +24,9 @@ from bs4 import BeautifulSoup
 import urllib.parse
 import psycopg2
 
+this_file_path = os.path.dirname(os.path.realpath(__file__))
+top_level_path = os.path.join(this_file_path, "..")  # depends on where this file is in hierarchy
+
 class MEDOC(object):
     def __init__(self):
         """
@@ -32,8 +35,13 @@ class MEDOC(object):
         self.parameters = self.config = configparser.ConfigParser()
         self.parameters.read('./configuration.cfg')
         self.regex_gz = re.compile('^pubmed.*.xml.gz$')
-        self.insert_log_path = self.parameters['paths']['already_downloaded_files']
-        self.download_folder = self.parameters['paths']['pubmed_data_download']
+
+        this_file_path = os.path.dirname(os.path.realpath(__file__))
+        top_level_path = os.path.join(this_file_path, "..")  # depends on where this file is in hierarchy
+        print(top_level_path)
+        self.insert_log_path = os.path.join(top_level_path, self.parameters['paths']['already_downloaded_files'])
+        self.download_folder = os.path.join(top_level_path, self.parameters['paths']['pubmed_data_download'])
+
         print('\n' * 2)
 
     def create_pubmedDB(self):
@@ -64,7 +72,7 @@ class MEDOC(object):
         cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
         local_tables = []
         for row in cursor:
-            print(row)
+            # print(row)
             local_tables.append(row[0])
 
         test_table_name = "medline_investigator"  # last tablename in self.parameters['database']['path_to_sql']
@@ -151,7 +159,7 @@ class MEDOC(object):
         with file_handle:
             print('Downloading {} ..'.format(file_name))
             ftp_ncbi.retrbinary('RETR {}'.format(file_name_dir[0][1]), file_handle.write)
-            os.chdir(self.parameters['paths']['program_path'])
+            os.chdir(top_level_path)
             print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2),
                                                                MEDOC.download.__name__))
 
@@ -165,7 +173,7 @@ class MEDOC(object):
         #  Extraction
         gz_file = gzip.open(file_name, 'rt', encoding='utf-8')
         file_content = gz_file.read()
-        os.chdir(self.parameters['paths']['program_path'])
+        os.chdir(top_level_path)
         print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2), MEDOC.extract.__name__))
 
         return file_content

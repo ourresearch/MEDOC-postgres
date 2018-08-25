@@ -3,13 +3,15 @@ import os
 import urllib.parse
 import psycopg2
 
+this_file_path = os.path.dirname(os.path.realpath(__file__))
+top_level_path = os.path.join(this_file_path, "..")  # depends on where this file is in hierarchy
 
 class Query_Executor:
     """
     Small helper class to execute query, and log them if there is an error
     """
     def __init__(self, parameters):
-        self.log_file = os.path.join(parameters['paths']['program_path'], parameters['paths']['sql_error_log'])
+        self.log_file = os.path.join(top_level_path, parameters['paths']['sql_error_log'])
 
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["DATABASE_URL"])

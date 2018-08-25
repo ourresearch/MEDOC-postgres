@@ -15,10 +15,13 @@ import re
 import sys
 import time
 import configparser
-
 sys.path.append('./lib')
 import MEDOC
 import getters
+
+this_file_path = os.path.dirname(os.path.realpath(__file__))
+top_level_path = os.path.join(this_file_path, ".")  # depends on where this file is in hierarchy
+
 
 if __name__ == '__main__':
 
@@ -26,7 +29,7 @@ if __name__ == '__main__':
     parameters = configparser.ConfigParser()
     parameters.read('./configuration.cfg')
     insert_limit = int(parameters['database']['insert_command_limit'])
-    insert_log_path = os.path.join(parameters['paths']['program_path'], parameters['paths']['already_downloaded_files'])
+    insert_log_path = os.path.join(top_level_path, parameters['paths']['already_downloaded_files'])
 
     # Step A : Create database if not exist
     MEDOC.create_pubmedDB()
@@ -39,7 +42,6 @@ if __name__ == '__main__':
 
         start_time = time.time()
 
-        # if True:
         if file_to_download not in open(insert_log_path).read().splitlines():
 
             # Step C: download file if not already

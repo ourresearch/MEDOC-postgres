@@ -76,14 +76,12 @@ It'll look something like this, with your values for all the uppercase parts in 
 
     export DATABASE_URL=postgres://USERNAME:PASSWORD@HOST:PORT/YOURDATABASENAME
 
+If your computer has 16Go or more of RAM, you can set '_insert_command_limit_' to '1000' of greater in 'configuration.cfg'
+
 
 ### Launch the programm
 
-Open file 'configuration.cfg' and change complete path value including your /home/xxx/...
-
-If your computer has 16Go or more of RAM, you can set '_insert_command_limit_' to '1000' of greater.
-
-Then, simply execute :
+Simply execute :
 
 	python3 __medoc__.py 
 
