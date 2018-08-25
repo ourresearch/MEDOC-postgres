@@ -35,6 +35,7 @@ class Query_Executor:
             #~ cursor.execute('SET ROLE pubmed_role;')
             cursor.execute(sql_command)
             connection.close()
+            print('.', end='', flush=True)
 
         except:
             exception = sys.exc_info()[1]
