@@ -130,8 +130,6 @@ class MEDOC(object):
         parameters.read('./configuration.cfg')
         rows = Query_Executor(parameters).select("SELECT filename FROM admin_inserted_files")
         inserted_list = [row[0] for row in rows]
-        print("inserted_list")
-        print(inserted_list)
 
         #  Join baseline + updates if not inserted already
         for baseline_file_name in gz_baseline:
