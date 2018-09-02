@@ -263,15 +263,6 @@ def store_results(MEDOC, articles, parameters, file_to_download, file_downloaded
     del values_tot_medline_personal_name_subject
 
 
-def test_file(MEDOC, parameters, filename):
-    with open(filename, "r") as fp:
-        print("reading {}".format(filename))
-        file_content = fp.read()
-        print("parsing {}".format(filename))
-        articles = MEDOC.parse(data=file_content)
-        print("storing results for {}".format(filename))
-        store_results(MEDOC, articles, parameters, file_to_download=filename, file_downloaded=filename)
-
 
 if __name__ == '__main__':
     MEDOC = MEDOC.MEDOC()
@@ -279,10 +270,14 @@ if __name__ == '__main__':
     parameters.read('./configuration.cfg')
 
     if False:
-        test_file(MEDOC, parameters, filename="/Users/hpiwowar/Downloads/pubmed18n0876.xml")
+        # do a single test on a locally downloaded file
+        filename = "/Users/hpiwowar/Downloads/pubmed18n0885.xml"
+        with open(filename, "r") as fp:
+            file_content = fp.read()
+            articles = MEDOC.parse(data=file_content)
+            store_results(MEDOC, articles, parameters, file_to_download=filename, file_downloaded=filename)
 
     else:
-
         # Step A : Create database if not exist
         MEDOC.create_pubmedDB()
 
@@ -301,11 +296,10 @@ if __name__ == '__main__':
                 # Step D: extract file
                 file_content = MEDOC.extract(file_name=file_downloaded)
 
-
                 # Step E: Parse XML file to extract articles
                 articles = MEDOC.parse(data=file_content)
 
-                store_results(MEDOC, articles, file_to_download, file_downloaded)
+                store_results(MEDOC, articles, parameters, file_to_download, file_downloaded)
 
             print('Total time for file {}: {} min\n'.format(file_to_download, round((time.time() - start_time) / 60, 2)))
 
