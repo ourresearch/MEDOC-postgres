@@ -205,6 +205,17 @@ class MEDOC(object):
         soup_article = BeautifulSoup(str(article), 'lxml')
         article_INSERT_list = []
         pmid_primary_key = re.findall('<articleid idtype="pubmed">([0-9]*)</articleid>', str(article))
+        # print("pmid_primary_key: {}".format(pmid_primary_key))
+
+        if not pmid_primary_key:
+            # example that needs this hack:  pmid 27443694
+            # print("DID NOT FIND pmid_primary_key THE NORMAL WAY")
+            pmid_primary_key = re.findall('<medlinecitation [A-Za-z-=\" ]*>\s*<pmid version=\"\d\">(\d*)</pmid>', str(article), re.DOTALL | re.MULTILINE)
+            # print("FOUND pmid_primary_key THE OTHER WAY: {}".format(pmid_primary_key))
+
+        if not pmid_primary_key:
+            print("ERROR: NO PMID FOUND, skipping")
+            return
 
         #  Regexs
         r_year = re.compile('<year>([0-9]{4})</year>')
