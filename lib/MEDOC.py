@@ -212,8 +212,8 @@ class MEDOC(object):
             # print("FOUND pmid_primary_key THE OTHER WAY: {}".format(pmid_primary_key))
 
         if not pmid_primary_key:
-            print("ERROR: NO PMID FOUND, skipping")
-            return
+            print("ERROR: NO PMID FOUND, return with empty article list")
+            return []
 
         #  Regexs
         r_year = re.compile('<year>([0-9]{4})</year>')
