@@ -278,7 +278,7 @@ if __name__ == '__main__':
 
         # or get one from pubmed
         import requests
-        r = requests.get("https://www.ncbi.nlm.nih.gov/pubmed/16476868?report=xml&format=text")
+        r = requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=16476868&WebEnv=123&rettype=xml&retmode=xml")
         file_content = r.content
 
         articles = MEDOC.parse(data=file_content)

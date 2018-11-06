@@ -252,9 +252,15 @@ class MEDOC(object):
         #  journal
         journal = soup_article.find_all('journal')
         #  abstract_text_list
-        abstract_text_list = re.findall('<abstracttext.*?>(.*?)</abstracttext>', str(article))
+        abstract_text_list = re.findall('<abstracttext(.*?)>(.*?)</abstracttext>', str(article))
+        # if is a long list it is because it is a structured abstract, see https://www.ncbi.nlm.nih.gov/pubmed/16476868?report=xml&format=text
         if len(abstract_text_list) > 1:
-            abstract_text_raw = ' '.join(abstract_text_list)
+            abstract_text_raw = ""
+            for (abstract_text_attributes, abstract_text_inner) in abstract_text_list:
+                abstract_text_labels = re.findall('label=\"(.*?)\"', abstract_text_attributes)
+                if abstract_text_labels:
+                    abstract_text_raw += u"{}: ".format(abstract_text_labels[0])
+                abstract_text_raw += u"{} ".format(abstract_text_inner)
             abstract_text = re.sub('\"', ' ', str(abstract_text_raw))
         else:
             abstract_text = abstract_text_list
@@ -368,6 +374,16 @@ class MEDOC(object):
                  'value': {'pmid': pmid_primary_key,
                            'source': re.findall('<otherid source="(.*)">.*</otherid>', str(other_id)),
                            'other_id': re.findall('<otherid source=".*">(.*)</otherid>', str(other_id))}
+                 })
+
+        # other ids are also called "articleid"
+        other_ids_list = soup_article.find_all('articleid')
+        for other_id in other_ids_list:
+            article_INSERT_list.append(
+                {'name': 'medline_citation_other_id',
+                 'value': {'pmid': pmid_primary_key,
+                           'source': re.findall('<articleid source="(.*)">.*</articleid>', str(other_id)),
+                           'other_id': re.findall('<articleid source=".*">(.*)</articleid>', str(other_id))}
                  })
 
         ''' - - - - - - - - - - - - - - 
