@@ -244,7 +244,8 @@ def store_results(MEDOC, articles, parameters, file_to_download, file_downloaded
     # Step I: remove file and add file_name to a list to ignore this file next time
     print(
         'Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time_sql, 2), 'insert'))
-    MEDOC.remove(file_name=file_to_download)
+    if file_to_download:
+        MEDOC.remove(file_name=file_to_download)
 
     #  Flush RAM
     del articles
@@ -269,13 +270,19 @@ if __name__ == '__main__':
     parameters = configparser.ConfigParser()
     parameters.read('./configuration.cfg')
 
-    if False:
+    if True:
         # do a single test on a locally downloaded file
-        filename = "/Users/hpiwowar/Downloads/pubmed18n0885.xml"
-        with open(filename, "r") as fp:
-            file_content = fp.read()
-            articles = MEDOC.parse(data=file_content)
-            store_results(MEDOC, articles, parameters, file_to_download=filename, file_downloaded=filename)
+        # filename = "/Users/hpiwowar/Downloads/pubmed18n0885.xml"
+        # with open(filename, "r") as fp:
+        #     file_content = fp.read()
+
+        # or get one from pubmed
+        import requests
+        r = requests.get("https://www.ncbi.nlm.nih.gov/pubmed/16476868?report=xml&format=text")
+        file_content = r.content
+
+        articles = MEDOC.parse(data=file_content)
+        store_results(MEDOC, articles, parameters, file_to_download=None, file_downloaded=None)
 
     else:
         # Step A : Create database if not exist

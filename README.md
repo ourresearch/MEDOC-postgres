@@ -122,9 +122,7 @@ Or simply try to lower the '_insert_command_limit_' parameter, to insert values 
 
 __SQL insertions are taking really a lot of time (more than 15min / file)'__
 
-Recreate the SQL database after dropping it, by running the following command:
-
-	DROP DATABASE pubmed ;
+drop the tables
 
 Then, comment every line about indexes (_CREATE INDEX_) or foreigns keys (_ALTER TABLE_) into the SQL creation file. Indexes are slowing up insertions.
 

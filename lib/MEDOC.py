@@ -254,7 +254,7 @@ class MEDOC(object):
         #  abstract_text_list
         abstract_text_list = re.findall('<abstracttext.*?>(.*?)</abstracttext>', str(article))
         if len(abstract_text_list) > 1:
-            abstract_text_raw = ''.join(abstract_text_list)
+            abstract_text_raw = ' '.join(abstract_text_list)
             abstract_text = re.sub('\"', ' ', str(abstract_text_raw))
         else:
             abstract_text = abstract_text_list

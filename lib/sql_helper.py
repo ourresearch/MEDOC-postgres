@@ -11,7 +11,8 @@ class Query_Executor:
     Small helper class to execute query, and log them if there is an error
     """
     def __init__(self, parameters):
-        self.log_file = os.path.join(top_level_path, parameters['paths']['sql_error_log'])
+        if "paths" in parameters:
+            self.log_file = os.path.join(top_level_path, parameters['paths']['sql_error_log'])
 
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
