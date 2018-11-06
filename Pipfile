@@ -10,6 +10,7 @@ name = "pypi"
 lxml = "==3.5.0"
 "psycopg2" = "==2.7.1"
 Cython = "==0.27.2"
+requests = "==2.20.0"
 
 [dev-packages]
 
