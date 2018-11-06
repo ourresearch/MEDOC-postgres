@@ -29,7 +29,7 @@ CREATE INDEX pk_med_citation on medline_citation(pmid, pub_date_year, left(journ
 #==============================================================
 # TABLE: medline_author
 #==============================================================
-CREATE TABLE medline_author (pmid INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT, affiliation TEXT, collective_name TEXT);
+CREATE TABLE medline_author (pmid INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT, affiliation TEXT, collective_name TEXT, orcid TEXT);
 CREATE INDEX idx_author on medline_author(pmid, left(affiliation, 255));
 
 #==============================================================
@@ -83,7 +83,7 @@ CREATE INDEX idx_data_bank_pmid on medline_data_bank(pmid);
 #==============================================================
 # TABLE: medline_personal_name_subject 
 #==============================================================
-CREATE TABLE medline_personal_name_subject (pmid INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT);
+CREATE TABLE medline_personal_name_subject (pmid INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT, orcid TEXT);
 CREATE INDEX idx_pers_name_pmid on medline_personal_name_subject(pmid);
 
 #==============================================================
@@ -95,5 +95,5 @@ CREATE INDEX idx_other_id_pmid on medline_citation_other_id(pmid);
 #==============================================================
 # TABLE: medline_investigator 
 #==============================================================
-CREATE TABLE medline_investigator (pmid	INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT,  suffix TEXT, affiliation TEXT);
+CREATE TABLE medline_investigator (pmid	INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT,  suffix TEXT, affiliation TEXT, orcid TEXT);
 CREATE INDEX idx_invest_pmid on medline_investigator(pmid);

@@ -252,18 +252,21 @@ class MEDOC(object):
         #  journal
         journal = soup_article.find_all('journal')
         #  abstract_text_list
-        abstract_text_list = re.findall('<abstracttext(.*?)>(.*?)</abstracttext>', str(article))
+        abstract_text_list = re.findall('<abstracttext.*?>(.*?)</abstracttext>', str(article))
         # if is a long list it is because it is a structured abstract, see https://www.ncbi.nlm.nih.gov/pubmed/16476868?report=xml&format=text
         if len(abstract_text_list) > 1:
             abstract_text_raw = ""
-            for (abstract_text_attributes, abstract_text_inner) in abstract_text_list:
+            abstract_text_list_with_attributes = re.findall('<abstracttext(.*?)>(.*?)</abstracttext>', str(article))
+            for (abstract_text_attributes, abstract_text_inner) in abstract_text_list_with_attributes:
                 abstract_text_labels = re.findall('label=\"(.*?)\"', abstract_text_attributes)
                 if abstract_text_labels:
                     abstract_text_raw += u"{}: ".format(abstract_text_labels[0])
                 abstract_text_raw += u"{} ".format(abstract_text_inner)
             abstract_text = re.sub('\"', ' ', str(abstract_text_raw))
+            abstract_text = [abstract_text]  # is expected to be a list
         else:
             abstract_text = abstract_text_list
+
         #  date_of_electronic_publication
         date_of_electronic_publication = soup_article.find_all('articledate', attrs={'datetype': 'Electronic'})
         try:
@@ -348,7 +351,9 @@ class MEDOC(object):
                            'initials': re.findall('<initials>(.*)</initials>', str(author)),
                            'suffix': re.findall('<suffix>(.*)</suffix>', str(author)),
                            'affiliation': re.findall('<affiliation>(.*)</affiliation>', str(author)),
-                           'collective_name': re.findall('<collectivename>(.*)</collectivename>', str(author))}
+                           'collective_name': re.findall('<collectivename>(.*)</collectivename>', str(author)),
+                           'orcid': re.findall('<identifier source="ORCID">(.*)</identifier>', str(author))
+                           }
                  })
 
         ''' - - - - - - - - - - - - - -  
@@ -382,8 +387,8 @@ class MEDOC(object):
             article_INSERT_list.append(
                 {'name': 'medline_citation_other_id',
                  'value': {'pmid': pmid_primary_key,
-                           'source': re.findall('<articleid source="(.*)">.*</articleid>', str(other_id)),
-                           'other_id': re.findall('<articleid source=".*">(.*)</articleid>', str(other_id))}
+                           'source': re.findall('<articleid idtype="(.*)">.*</articleid>', str(other_id)),
+                           'other_id': re.findall('<articleid idtype=".*">(.*)</articleid>', str(other_id))}
                  })
 
         ''' - - - - - - - - - - - - - - 
@@ -450,7 +455,9 @@ class MEDOC(object):
                            'middle_name': re.findall('<middlename>(.*)</middlename>', str(investigator)),
                            'initials': re.findall('<initials>(.*)</initials>', str(investigator)),
                            'suffix': re.findall('<suffix>(.*)</suffix>', str(investigator)),
-                           'affiliation': re.findall('<affiliation>(.*)</affiliation>', str(investigator))}
+                           'affiliation': re.findall('<affiliation>(.*)</affiliation>', str(investigator)),
+                           'orcid': re.findall('<identifier source="ORCID">(.*)</identifier>', str(investigator))
+                           }
                  })
 
         ''' - - - - - - - - - - - - - - 
@@ -494,7 +501,9 @@ class MEDOC(object):
                            'first_name': re.findall('<firstname>(.*)</firstname>', str(subject)),
                            'middle_name': re.findall('<middlename>(.*)</middlename>', str(subject)),
                            'initials': re.findall('<initials>(.*)</initials>', str(subject)),
-                           'suffix': re.findall('<suffix>(.*)</suffix>', str(subject))}
+                           'suffix': re.findall('<suffix>(.*)</suffix>', str(subject)),
+                           'orcid': re.findall('<identifier source="ORCID">(.*)</identifier>', str(subject))
+                           }
                  })
 
         #  Final return, for every articles
