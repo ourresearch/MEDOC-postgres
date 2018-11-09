@@ -95,27 +95,25 @@ if __name__ == '__main__':
 
     # Step B: get file list on NCBI
     gz_file_list = MEDOC.get_file_list()
-    gz_file_list.reverse()
+    gz_file_list.reverse()  # reverse for fun, get to the more recent stuff early
 
-    # for file_to_download in gz_file_list:
+    for file_to_download in gz_file_list:
 
-    file_to_download = gz_file_list[0] # temporary
+        start_time = time.time()
+        insert_log_path = os.path.join(top_level_path, parameters['paths']['already_downloaded_files'])
 
-    start_time = time.time()
+        if file_to_download not in open(insert_log_path).read().splitlines():
+            # Step C: download file if not already
+            file_downloaded = MEDOC.download(file_name=file_to_download)
 
-    # insert_log_path = os.path.join(top_level_path, parameters['paths']['already_downloaded_files'])
-    # if file_to_download not in open(insert_log_path).read().splitlines():
+            # Step D: extract file
+            file_content = MEDOC.extract(file_name=file_downloaded)
 
-    # Step C: download file if not already
-    file_downloaded = MEDOC.download(file_name=file_to_download)
+            # Step E: Parse XML file to extract articles
+            articles = MEDOC.parse(data=file_content)
 
-    # Step D: extract file
-    file_content = MEDOC.extract(file_name=file_downloaded)
+            # Step F: Store the results in the DB
+            store_results(MEDOC, articles, parameters, file_to_download, file_downloaded)
 
-    # Step E: Parse XML file to extract articles
-    articles = MEDOC.parse(data=file_content)
-
-    store_results(MEDOC, articles, parameters, file_to_download, file_downloaded)
-
-    print('Total time for file {}: {} min\n'.format(file_to_download, round((time.time() - start_time) / 60, 2)))
+            print('Total time for file {}: {} min\n'.format(file_to_download, round((time.time() - start_time) / 60, 2)))
 
