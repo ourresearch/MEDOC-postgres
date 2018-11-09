@@ -21,7 +21,7 @@ parameters.read('./configuration.cfg')
 #     file_content = fp.read()
 
 # or get one from pubmed
-pmid = 18700873
+pmid = 29456894
 r = requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={}&WebEnv=123&rettype=xml&retmode=xml".format(
     pmid))
 file_content = r.content

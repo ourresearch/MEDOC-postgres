@@ -19,6 +19,7 @@ import time
 import gzip
 import json
 import configparser
+import requests
 from ftplib import FTP
 from bs4 import BeautifulSoup
 import urllib.parse
@@ -35,7 +36,7 @@ class MEDOC(object):
 		"""
         self.parameters = self.config = configparser.ConfigParser()
         self.parameters.read('./configuration.cfg')
-        self.regex_gz = re.compile('^pubmed.*.xml.gz$')
+        self.regex_gz_html = '"(pubmed.*.xml.gz)"'
 
         this_file_path = os.path.dirname(os.path.realpath(__file__))
         top_level_path = os.path.join(this_file_path, "..")  # depends on where this file is in hierarchy
@@ -103,26 +104,26 @@ class MEDOC(object):
             inserted_log.close()
         #  List of files to download
         gz_file_list = []
-        #  Connect FTP's root
-        ftp_ncbi = FTP('ftp.ncbi.nlm.nih.gov')
-        ftp_ncbi.login()
+
+
+        url = "https://ftp.ncbi.nlm.nih.gov"
+
         #  BASELINE
         gz_baseline = []
-        ftp_ncbi.cwd('/pubmed/baseline/')
-        file_list = ftp_ncbi.nlst()
-        downloaded_files = os.listdir()
-        for file_name in file_list:
-            if re.match(self.regex_gz, file_name) is not None:
-                gz_baseline.append('baseline/' + file_name)
+        r = requests.get(url + "/pubmed/baseline/")
+        page = r.text
+        matches = re.findall(self.regex_gz_html, page)
+        for file_name in matches:
+            gz_baseline.append('baseline/' + file_name)
         print('{} files in Medline\'s baseline'.format(len(gz_baseline)))
+
         #  UPDATES
         gz_update = []
-        ftp_ncbi.cwd('/pubmed/updatefiles/')
-        file_list = ftp_ncbi.nlst()
-        downloaded_files = os.listdir()
-        for file_name in file_list:
-            if re.match(self.regex_gz, file_name) is not None:
-                gz_update.append('updatefiles/' + file_name)
+        r = requests.get(url + "/pubmed/updatefiles/")
+        page = r.text
+        matches = re.findall(self.regex_gz_html, page)
+        for file_name in matches:
+            gz_update.append('updatefiles/' + file_name)
         print('{} files in Medline\'s updates'.format(len(gz_update)))
 
         #  Check if already INSERTED before
@@ -146,25 +147,18 @@ class MEDOC(object):
         return gz_file_list
 
     def download(self, file_name):
-        print('- ' * 30 + 'DOWNLOADING FILE')
+        print('- ' * 30 + 'DOWNLOADING FILE ' + file_name)
         #  Timestamp
         start_time = time.time()
+
         #  Go to storage directory
         os.chdir(self.download_folder)
-        #  Connect FTP root
-        ftp_ncbi = FTP('ftp.ncbi.nlm.nih.gov')
-        ftp_ncbi.login()
-        #  Change FTP directory
+
         file_name_dir = re.findall('(.*)/(.*)', file_name)
-        ftp_ncbi.cwd('/pubmed/' + str(file_name_dir[0][0]))
-        #  Download file
-        file_handle = open(file_name_dir[0][1], 'wb')
-        with file_handle:
-            print('Downloading {} ..'.format(file_name))
-            ftp_ncbi.retrbinary('RETR {}'.format(file_name_dir[0][1]), file_handle.write)
-            os.chdir(top_level_path)
-            print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2),
-                                                               MEDOC.download.__name__))
+        url = "https://ftp.ncbi.nlm.nih.gov"
+        full_url = url + "/pubmed/" + file_name
+        r = requests.get(full_url)
+        open(file_name_dir[0][1], 'wb').write(r.content)
 
         return file_name_dir[0][1]
 
@@ -199,7 +193,6 @@ class MEDOC(object):
         return articles
 
     def get_command(self, article, gz):
-
         soup_article = BeautifulSoup(str(article), 'lxml')
         article_INSERT_list = []
         pmid_primary_key = re.findall('<articleid idtype="pubmed">([0-9]*)</articleid>', str(article))
@@ -340,10 +333,12 @@ class MEDOC(object):
 		medline_author
 		- - - - - - - - - - - - - -  '''
         author_list = soup_article.find_all('author')
+        author_order = 0
         for author in author_list:
             article_INSERT_list.append(
                 {'name': 'medline_author',
                  'value': {'pmid': pmid_primary_key,
+                           'author_order': author_order,
                            'last_name': re.findall('<lastname>(.*)</lastname>', str(author)),
                            'fore_name': re.findall('<forename>(.*)</forename>', str(author)),
                            'first_name': re.findall('<firstname>(.*)</firstname>', str(author)),
@@ -355,6 +350,7 @@ class MEDOC(object):
                            'orcid': re.findall('<identifier source="ORCID">(.*)</identifier>', str(author))
                            }
                  })
+            author_order += 1
 
         ''' - - - - - - - - - - - - - -  
 		medline_chemical_list

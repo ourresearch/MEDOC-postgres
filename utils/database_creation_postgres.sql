@@ -13,7 +13,7 @@
 #		nlmcommon_021101.dtd 
 
 # The FTP are located at: 
-#		ftp://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/
+#		https://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/
 
 # Script to fill it available on github:
 #		mysql original: https://github.com/MrMimic/MEDOC
@@ -23,25 +23,25 @@
 #==============================================================
 # TABLE: medline_citation 
 #==============================================================
-CREATE TABLE medline_citation (pmid INTEGER NOT NULL, date_created TIMESTAMP NOT NULL, date_completed TIMESTAMP, date_revised TIMESTAMP, issn TEXT, volume TEXT, issue TEXT, pub_date_year TEXT, pub_date_month TEXT, pub_date_day TEXT, medline_date TEXT, journal_title TEXT, iso_abbreviation TEXT, article_title TEXT NOT NULL, medline_pgn TEXT, abstract_text TEXT, copyright_info TEXT, article_author_list_comp_yn TEXT DEFAULT 'Y', data_bank_list_comp_yn TEXT DEFAULT 'Y', grantlist_complete_yn TEXT DEFAULT 'Y', vernacular_title TEXT, date_of_electronic_publication TIMESTAMP, country TEXT, medline_ta TEXT NOT NULL, nlm_unique_id TEXT, xml_file_name TEXT NOT NULL, number_of_references TEXT, citation_owner TEXT DEFAULT 'NLM', citation_status TEXT, PRIMARY KEY (pmid));
+CREATE TABLE medline_citation (pmid INTEGER NOT NULL, date_created TIMESTAMP NOT NULL, date_completed TIMESTAMP, date_revised TIMESTAMP, issn TEXT, volume TEXT, issue TEXT, pub_date_year TEXT, pub_date_month TEXT, pub_date_day TEXT, medline_date TEXT, journal_title TEXT, iso_abbreviation TEXT, article_title TEXT, medline_pgn TEXT, abstract_text TEXT, copyright_info TEXT, article_author_list_comp_yn TEXT DEFAULT 'Y', data_bank_list_comp_yn TEXT DEFAULT 'Y', grantlist_complete_yn TEXT DEFAULT 'Y', vernacular_title TEXT, date_of_electronic_publication TIMESTAMP, country TEXT, medline_ta TEXT, nlm_unique_id TEXT, xml_file_name TEXT, number_of_references TEXT, citation_owner TEXT DEFAULT 'NLM', citation_status TEXT, PRIMARY KEY (pmid));
 CREATE INDEX pk_med_citation on medline_citation(pmid, pub_date_year, left(journal_title, 255), country);
 
 #==============================================================
 # TABLE: medline_author
 #==============================================================
-CREATE TABLE medline_author (pmid INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT, affiliation TEXT, collective_name TEXT, orcid TEXT);
+CREATE TABLE medline_author (pmid INTEGER NOT NULL, author_order NUMERIC, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT, affiliation TEXT, collective_name TEXT, orcid TEXT);
 CREATE INDEX idx_author on medline_author(pmid, left(affiliation, 255));
 
 #==============================================================
 # TABLE: medline_chemical_list
 #==============================================================
-CREATE TABLE medline_chemical_list (pmid INTEGER NOT NULL, registry_number TEXT, name_of_substance TEXT NOT NULL);
+CREATE TABLE medline_chemical_list (pmid INTEGER NOT NULL, registry_number TEXT, name_of_substance TEXT);
 CREATE INDEX idx_m_chem on medline_chemical_list(pmid, left(name_of_substance, 255));
 
 #==============================================================
 # TABLE: medline_mesh_heading 
 #==============================================================
-CREATE TABLE medline_mesh_heading(pmid INTEGER NOT NULL, descriptor_name TEXT NOT NULL, descriptor_ui TEXT, descriptor_name_major_yn TEXT DEFAULT 'N', qualifier_name TEXT NOT NULL, qualifier_ui TEXT, qualifier_name_major_yn TEXT DEFAULT 'N');
+CREATE TABLE medline_mesh_heading(pmid INTEGER NOT NULL, descriptor_name TEXT NOT NULL, descriptor_ui TEXT, descriptor_name_major_yn TEXT DEFAULT 'N', qualifier_name TEXT, qualifier_ui TEXT, qualifier_name_major_yn TEXT DEFAULT 'N');
 CREATE INDEX pk_med_meshheading on medline_mesh_heading(pmid, descriptor_name, qualifier_name);
 
 #==============================================================
@@ -53,7 +53,7 @@ CREATE INDEX idx_comments_pmid on medline_comments_corrections(pmid);
 #==============================================================
 # TABLE: medline_citation_subsets 
 #==============================================================
-CREATE TABLE medline_citation_subsets(pmid INTEGER NOT NULL, citation_subset TEXT NOT NULL);
+CREATE TABLE medline_citation_subsets(pmid INTEGER NOT NULL, citation_subset TEXT);
 CREATE INDEX pk_med_cit_sub on medline_citation_subsets(pmid, citation_subset);
 
 #==============================================================
@@ -71,13 +71,13 @@ CREATE INDEX idx_lang on medline_article_language(pmid, language);
 #==============================================================
 # TABLE: medline_grant 
 #==============================================================
-CREATE TABLE medline_grant(pmid INTEGER NOT NULL, grant_id TEXT NOT NULL, acronym TEXT, agency TEXT, country TEXT);
+CREATE TABLE medline_grant(pmid INTEGER NOT NULL, grant_id TEXT, acronym TEXT, agency TEXT, country TEXT);
 CREATE INDEX pk_medline_grant on medline_grant(pmid, grant_id, country);
 
 #==============================================================
 # TABLE: medline_data_bank 
 #==============================================================
-CREATE TABLE medline_data_bank(pmid INTEGER NOT NULL, accession_number TEXT NOT NULL);
+CREATE TABLE medline_data_bank(pmid INTEGER NOT NULL, accession_number TEXT);
 CREATE INDEX idx_data_bank_pmid on medline_data_bank(pmid);
 
 #==============================================================

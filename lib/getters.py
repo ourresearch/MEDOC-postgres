@@ -28,7 +28,7 @@ def get_fields():
                                    'pub_date_month', 'medline_ta']
     fields["medline_article_language"] = ['pmid', 'language']
     fields["medline_article_publication_type"] = ['pmid', 'publication_type']
-    fields["medline_author"] = ['pmid', 'last_name', 'fore_name', 'first_name', 'middle_name', 'initials', 'suffix',
+    fields["medline_author"] = ['pmid', 'author_order', 'last_name', 'fore_name', 'first_name', 'middle_name', 'initials', 'suffix',
                              'affiliation', 'collective_name', 'orcid']
     fields["medline_chemical_list"] = ['pmid', 'registry_number', 'name_of_substance']
     fields["medline_citation_other_id"] = ['pmid', 'source', 'other_id']
@@ -52,15 +52,18 @@ def get_values(table_name, fields, insert_table):
         for key, value in insert_table['value'].items():
             # If parsed value field == actual field
             if field == key:
-                try:
-                    # Get "VALUE"
-                    value_to_append = "'" + (list(value)[0]).replace("'", '') + "'"
-                except:
+                if value or str(value)=="0":
+                    if isinstance(value, int):
+                        value_to_append = value
+                    else:
+                        extracted_value = list(value)[0]
+                        value_to_append = u"'{}'".format(extracted_value)
+                else:
                     if field != "pmid":
-                        value_to_append = "'N/A'"
+                        value_to_append = "NULL"
                     else:
                         break
-                        print("error: pmid can't be N/A")
+                        print("error: pmid can't be None")
                 # Add it to a list
                 values.append(value_to_append)
     return values
@@ -80,7 +83,7 @@ def delete_existing(article, parameters):
 def insert(table_name, fields, values_tot, parameters):
     values_tot_of_strings = []
     for value_list in values_tot:
-        values_tot_of_strings.append('(' + ', '.join(value_list) + ')')
+        values_tot_of_strings.append('(' + ', '.join([str(x) for x in value_list]) + ')')
 
     sql_command = u"INSERT INTO {} ({}) VALUES {};".format(
         table_name, ', '.join(fields), ', '.join(values_tot_of_strings))

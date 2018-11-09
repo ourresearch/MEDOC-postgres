@@ -12,7 +12,7 @@
 #		nlmcommon_021101.dtd 
 
 # The FTP are located at: 
-#		ftp://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/
+#		https://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/
 
 # Script to fill it available on github:
 #		https://github.com/MrMimic/MEDOC
