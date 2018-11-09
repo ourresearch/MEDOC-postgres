@@ -136,3 +136,16 @@ On Debian based machines try running:
 
 	sudo apt-get install python-dev libxml2-dev libxslt1-dev zlib1g-dev
 
+
+## On Heroku
+
+Needs to be run on a large dyno to have enough memory.  Performance-L works well, smaller dynos may too.
+
+
+## Improvements over previous version
+
+In addition to porting to Postgres, some improvements have been made:
+- author order is preserved
+- dois are now stored more reliably
+- orcid is stored
+

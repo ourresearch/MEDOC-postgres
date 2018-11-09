@@ -66,7 +66,7 @@ def store_results(MEDOC, articles, parameters, file_to_download, file_downloaded
                         values_tot[table_name] = []
 
     # Write the remaining entries
-    for table_name in table_fields_lookup:
+    for (table_name, fields) in table_fields_lookup.items():
         if len(values_tot[table_name]) > 0:
             getters.insert(table_name, fields, values_tot[table_name], parameters)
 
