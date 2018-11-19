@@ -82,7 +82,7 @@ If your computer has 16Go or more of RAM, you can set '_insert_command_limit_' t
 
 Simply execute :
 
-	python3 __medoc__.py 
+	python3 run.py
 
 	
 ### Output

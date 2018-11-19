@@ -1,2 +1,2 @@
-run_pubmed: python __medoc__.py
+run_pubmed: python run.py --pubmed
 run_doiboost: python run.py --doiboost
