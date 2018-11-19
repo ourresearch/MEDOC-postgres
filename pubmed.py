@@ -276,7 +276,6 @@ def parse(data):
     return articles
 
 def build_insert_list(article_raw, gz):
-    print('- ' * 30 + 'BUILDING INSERT STATEMENTS')
     start_time = time.time()
 
     soup_article = BeautifulSoup(str(article_raw), 'lxml')
@@ -610,7 +609,7 @@ def build_insert_list(article_raw, gz):
              })
 
     #  Final return, for every articles
-    print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2), build_insert_list.__name__))
+    # print('Elapsed time: {} sec for module: {}'.format(round(time.time() - start_time, 2), build_insert_list.__name__))
     # print(article_INSERT_list)
 
     return article_INSERT_list
