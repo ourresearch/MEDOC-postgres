@@ -4,15 +4,14 @@ import urllib.parse
 import psycopg2
 
 this_file_path = os.path.dirname(os.path.realpath(__file__))
-top_level_path = os.path.join(this_file_path, "..")  # depends on where this file is in hierarchy
+top_level_path = os.path.join(this_file_path)  # depends on where this file is in hierarchy
 
 class Query_Executor:
     """
     Small helper class to execute query, and log them if there is an error
     """
-    def __init__(self, parameters):
-        if "paths" in parameters:
-            self.log_file = os.path.join(top_level_path, parameters['paths']['sql_error_log'])
+    def __init__(self):
+        self.log_file = os.path.join(top_level_path, "log/errors.log")
 
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -30,10 +29,10 @@ class Query_Executor:
 
 
     def execute(self, sql_command):
+        # print(u"running SQL: {}".format(sql_command))
         connection = self.connection
         cursor = connection.cursor()
         try:
-            #~ cursor.execute('SET ROLE pubmed_role;')
             cursor.execute(sql_command)
             connection.close()
             print('.', end='', flush=True)
@@ -61,3 +60,5 @@ class Query_Executor:
             errors_log.write('{} - {}\n'.format(exception, sql_command))
             errors_log.close()
             # print('{} - {}\n'.format(exception, sql_command))
+
+

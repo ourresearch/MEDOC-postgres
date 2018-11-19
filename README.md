@@ -1,13 +1,13 @@
-# MEDOC (MEdline DOwnloading Contrivance)
+# medoc (MEdline DOwnloading Contrivance)
 
-More information about MEDOC on OMICTools website or on MEDOC's publication on arXiv.org:
+More information about medoc on OMICTools website or on medoc's publication on arXiv.org:
 
 * https://arxiv.org/abs/1710.06590
 
 * https://omictools.com/medline-downloading-contrivance-tool
 
 
-## About MEDOC
+## About medoc
 
 ### Development
 
@@ -30,8 +30,8 @@ The first step is to clone this Github repository on your local machine.
 
 Open a terminal:
 
-	git clone "https://github.com/Impactstory/MEDOC-postgres"
-	cd ./MEDOC-postgres
+	git clone "https://github.com/Impactstory/medoc-postgres"
+	cd ./medoc-postgres
 
 ### Setup
 
@@ -51,7 +51,7 @@ You may also need `python-dev`. You can also install it with the same command:
 
 #### Installation
 
-Run the following command from the MEDOC folder.
+Run the following command from the medoc folder.
 
     pip3 install pipenv
     pip3 install -r requirements.txt
@@ -62,15 +62,14 @@ NOTE: If python3 is your default, you do not need to specify `python3` or `pip3`
 
 #### venv
 
-Run the following command from the MEDOC folder.
+Run the following command from the medoc folder.
 
     pipenv shell
 
 
 #### Configuration
 
-Before you can run the code, you should take a look at `parameters.json` file and customize it according to your 
-environment, and set environment variable DATABASE_URL to match your database connection string.
+Before you can run the code, you should set environment variable DATABASE_URL to match your database connection string.
 
 It'll look something like this, with your values for all the uppercase parts in the value:
 
@@ -111,7 +110,7 @@ Then, a regular output for a file loading should look like:
 
 __Program stop running because of 'Segmentation fault (core dumped)'__
 
-Indexing a file with 30K article take some time and RAM (if you know other parser than LXML, more RAM-frieldy, do a PR). Try to open the function _/lib_medline/python_functions/E_parse_xml.py_ and go to the line:
+Indexing a file with 30K article take some time and RAM (if you know other parser than LXML, more RAM-frieldy, do a PR). Go to the line:
 
 	soup = BeautifulSoup(file_content, 'lxml')
 
@@ -146,6 +145,9 @@ Needs to be run on a large dyno to have enough memory.  Performance-L works well
 
 In addition to porting to Postgres, some improvements have been made:
 - author order is preserved
-- dois are now stored more reliably
 - orcid is stored
-
+- dois are stored more reliably
+- apostrophes in titles and abstracts are preserved
+- structured abstracts are supported
+- save all affiliations not just the first one (new table: medline_affiliations)
+- save raw xml (new table: medline_raw_xml)

@@ -4,16 +4,7 @@ import re
 import sys
 import time
 import configparser
-
-sys.path.append('./lib')
-import MEDOC
-import getters
-
-from __medoc__ import store_results
-
-MEDOC = MEDOC.MEDOC()
-parameters = configparser.ConfigParser()
-parameters.read('./configuration.cfg')
+import pubmed
 
 # do a single test on a locally downloaded file
 # filename = "/Users/hpiwowar/Downloads/pubmed18n0885.xml"
@@ -25,6 +16,6 @@ pmid = 29456894
 r = requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={}&WebEnv=123&rettype=xml&retmode=xml".format(
     pmid))
 file_content = r.content
-articles = MEDOC.parse(data=file_content)
-store_results(MEDOC, articles, parameters, file_to_download=None, file_downloaded=None)
+articles = pubmed.parse(data=file_content)
+pubmed.store_results(articles, file_to_download=None, file_downloaded=None)
 

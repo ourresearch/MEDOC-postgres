@@ -16,8 +16,8 @@
 #		https://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/
 
 # Script to fill it available on github:
-#		mysql original: https://github.com/MrMimic/MEDOC
-#   postgres port: https://github.com/impactstory/MEDOC-postgres
+#		mysql original: https://github.com/MrMimic/medoc
+#   postgres port: https://github.com/impactstory/medoc-postgres
 
 
 #==============================================================
@@ -31,6 +31,12 @@ CREATE INDEX pk_med_citation on medline_citation(pmid, pub_date_year, left(journ
 #==============================================================
 CREATE TABLE medline_author (pmid INTEGER NOT NULL, author_order NUMERIC, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT, suffix TEXT, affiliation TEXT, collective_name TEXT, orcid TEXT);
 CREATE INDEX idx_author on medline_author(pmid, left(affiliation, 255));
+
+#==============================================================
+# TABLE: medline_affiliation
+#==============================================================
+CREATE TABLE medline_affiliation (pmid INTEGER NOT NULL, author_order NUMERIC, affiliation_order NUMERIC, affiliation TEXT);
+CREATE INDEX id_affiliation on medline_affiliation(pmid, author_order, affiliation_order);
 
 #==============================================================
 # TABLE: medline_chemical_list
@@ -97,3 +103,9 @@ CREATE INDEX idx_other_id_pmid on medline_citation_other_id(pmid);
 #==============================================================
 CREATE TABLE medline_investigator (pmid	INTEGER NOT NULL, last_name TEXT, fore_name TEXT, first_name TEXT, middle_name TEXT, initials TEXT,  suffix TEXT, affiliation TEXT, orcid TEXT);
 CREATE INDEX idx_invest_pmid on medline_investigator(pmid);
+
+#==============================================================
+# TABLE: medline_raw_xml
+#==============================================================
+CREATE TABLE medline_raw_xml (pmid INTEGER NOT NULL, raw_xml NUMERIC, updated TIMESTAMP)
+CREATE INDEX id_raw_xml on medline_raw_xml(pmid)
