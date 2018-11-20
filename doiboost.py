@@ -184,7 +184,6 @@ def mark_as_finished(file_name):
 
 def remove_downloaded_file(file_name):
     os.chdir(download_folder)
-    file_name = re.findall('(.*)/(.*)', file_name)[0][1]
     try:
         os.remove('./' + file_name)
     except FileNotFoundError:
