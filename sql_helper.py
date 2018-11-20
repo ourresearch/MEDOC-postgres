@@ -44,6 +44,7 @@ class Query_Executor:
             errors_log.close()
             print('{} - {}\n'.format(exception, sql_command))
             print('X', end='', flush=True)
+            # print(1/0)
 
     def select(self, sql_command):
         connection = self.connection

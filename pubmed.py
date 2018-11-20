@@ -74,6 +74,8 @@ def get_values(table_name, fields, insert_table):
                 if value or str(value)=="0":
                     if isinstance(value, int):
                         value_to_append = value
+                    elif value == [None]:
+                        value_to_append = "NULL"
                     else:
                         extracted_value = list(value)[0]
                         value_to_append = u"'{}'".format(extracted_value)
@@ -148,7 +150,7 @@ def create_db_tables():
         print('Database already created')
     else:
         print('Database doesn\'t exist. Creation ..')
-        for command in open("utils/database_creation_postgres.sql", 'r'):
+        for command in open("utils/database_creation_pubmed.sql", 'r'):
             if command != '\n' and not command.startswith('#'):
                 cursor.execute(command)
         print('Database created')
