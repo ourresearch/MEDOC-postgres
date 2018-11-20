@@ -440,7 +440,7 @@ def build_insert_list(article_raw, gz):
                  'value': {'pmid': pmid_primary_key,
                            'author_order': author_order,
                            'affiliation_order': affiliation_order,
-                           'affiliation': affiliation
+                           'affiliation': [affiliation]
                            }})
             affiliation_order += 1
         article_INSERT_list.append(
