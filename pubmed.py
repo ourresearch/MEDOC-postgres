@@ -176,12 +176,12 @@ def get_file_list():
 
     url = "https://ftp.ncbi.nlm.nih.gov"
 
-    #  BASELINE
-    r = requests.get(url + "/pubmed/baseline/")
-    page = r.text
-    matches = re.findall(regex_gz_html, page)
-    for file_name in matches:
-        gz_file_list.append('baseline/' + file_name)
+    # #  BASELINE
+    # r = requests.get(url + "/pubmed/baseline/")
+    # page = r.text
+    # matches = re.findall(regex_gz_html, page)
+    # for file_name in matches:
+    #     gz_file_list.append('baseline/' + file_name)
 
     #  UPDATES
     r = requests.get(url + "/pubmed/updatefiles/")
