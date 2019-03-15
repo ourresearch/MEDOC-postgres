@@ -96,15 +96,18 @@ def get_pmids_from_raw_articles(raw_articles):
     return pmids
 
 def articles_not_yet_existing(raw_articles):
+    print("in articles_not_yet_existing")
     pmids = get_pmids_from_raw_articles(raw_articles)
     if not pmids:
         return []
 
+    print("pmids from raw articles")
     print(len(pmids))
 
     sql_command = u"select pmid from medline_citation WHERE pmid in ({});".format(u",".join(pmids))
 
     pmids_already_in_db = Query_Executor().select(sql_command)
+    print("pmids pmids_already_in_db")
     print(len(pmids_already_in_db))
 
     pmids_to_save = [pmid for pmid in pmids if pmid not in pmids_already_in_db]
@@ -115,9 +118,8 @@ def articles_not_yet_existing(raw_articles):
         if pmid_match[0] in pmids_to_save:
             articles_to_save += raw_article
 
+    print("len(articles_to_save)")
     print(len(articles_to_save))
-
-    print(1/0)
 
     return articles_to_save
 
@@ -667,6 +669,7 @@ def store_results(raw_articles, file_to_download, file_downloaded, skip_existing
     insert_limit = 1000
 
     if skip_existing:
+        print("skipping existing")
         articles_to_save = articles_not_yet_existing(raw_articles)
     else:
         # Delete existing
