@@ -364,7 +364,7 @@ def store_results(parsed_articles, file_to_download, file_downloaded, overwrite)
         articles_to_save = parsed_articles
         print("done deleting existing")
     else:
-        print "not supported yet"
+        print("not supported yet")
         return 1/0
 
     # Create a dictionary with data to INSERT for every article
