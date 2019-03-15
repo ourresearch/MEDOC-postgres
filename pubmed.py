@@ -108,7 +108,7 @@ def articles_not_yet_existing(raw_articles):
     sql_command = u"select pmid from medline_citation WHERE pmid in ({});".format(u",".join(pmids))
 
     rows = Query_Executor().select(sql_command)
-    pmids_already_in_db = [row[0] for row in rows]
+    pmids_already_in_db = [str(row[0]) for row in rows]
     print("pmids pmids_already_in_db")
     print(len(pmids_already_in_db))
     print(pmids_already_in_db[0])
