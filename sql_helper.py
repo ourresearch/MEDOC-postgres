@@ -61,5 +61,6 @@ class Query_Executor:
             errors_log.write('{} - {}\n'.format(exception, sql_command))
             errors_log.close()
             # print('{} - {}\n'.format(exception, sql_command))
+            return None
 
 
