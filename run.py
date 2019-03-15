@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run stuff.")
     parser.add_argument('--pubmed', default=False, action='store_true', help="run the pubmed import")
     parser.add_argument('--doiboost', default=False, action='store_true', help="run the doiboost import")
-    parser.add_argument('--overwrite', default=True, action='store_true', help="overwrite existing")
+    parser.add_argument('--skip-existing', default=False, action='store_true', help="skip existing pmids")
     parser.add_argument('--subset', nargs="?", type=str, help="subset of pubmed to pull in. valid responses: all, base, update")
 
     parsed_args = parser.parse_args()
@@ -60,7 +60,7 @@ if __name__ == "__main__":
             parsed_articles = lib_to_run.parse(file_content)
 
             # store the results in the DB
-            lib_to_run.store_results(parsed_articles, file_to_download, file_downloaded, parsed_vars["overwrite"])
+            lib_to_run.store_results(parsed_articles, file_to_download, file_downloaded, parsed_vars["skip-existing"])
 
             lib_to_run.mark_as_finished(file_to_download)
             if file_to_download:

@@ -650,7 +650,7 @@ def build_insert_list(article_raw, gz):
     return article_INSERT_list
 
 
-def store_results(raw_articles, file_to_download, file_downloaded, overwrite):
+def store_results(raw_articles, file_to_download, file_downloaded, skip_existing):
     print('- ' * 30 + 'SQL INSERTION')
 
     #  Timestamp
@@ -666,14 +666,14 @@ def store_results(raw_articles, file_to_download, file_downloaded, overwrite):
     articles_count = 0
     insert_limit = 1000
 
-    if overwrite:
+    if skip_existing:
+        articles_to_save = articles_not_yet_existing(raw_articles)
+    else:
         # Delete existing
         print("deleting existing")
         delete_matching_from_db(raw_articles)
         articles_to_save = raw_articles
         print("done deleting existing")
-    else:
-        articles_to_save = articles_not_yet_existing(raw_articles)
 
     # Create a dictionary with data to INSERT for every article
     for raw_article in articles_to_save:
