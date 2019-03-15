@@ -101,10 +101,10 @@ def articles_not_yet_existing(raw_articles):
     if not pmids:
         return []
 
-    print("pmids from raw articles")
-    print(len(pmids))
-    print(pmids[0:25])
     pmids_set = set(pmids)
+    print("pmids from raw articles")
+    print(len(pmids_set))
+    print(pmids[0:25])
 
     sql_command = u"select pmid from medline_citation WHERE pmid in ({});".format(u",".join(pmids))
 
@@ -112,15 +112,14 @@ def articles_not_yet_existing(raw_articles):
     pmids_already_in_db = [str(row[0]) for row in rows]
     pmids_already_in_db_set = set(pmids_already_in_db)
     print("pmids pmids_already_in_db")
-    print(len(pmids_already_in_db))
+    print(len(pmids_already_in_db_set))
     print(pmids_already_in_db[0])
     print(pmids_already_in_db[0:25])
 
     # pmids_to_save = [pmid for pmid in pmids if pmid not in pmids_already_in_db]
-    pmids_to_save_set = pmids_set - pmids_already_in_db
-    pmids_to_save = list(pmids_to_save_set)
+    pmids_to_save_set = pmids_set - pmids_already_in_db_set
     print("pmids pmids_to_save")
-    print(len(pmids_to_save))
+    print(len(pmids_to_save_set))
 
     articles_to_save = []
     for raw_article in raw_articles:
