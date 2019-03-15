@@ -23,13 +23,16 @@ import sql_helper
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run stuff.")
-    parser.add_argument('--pubmed', default=False, action='store_true', help="do you want to just reset?")
-    parser.add_argument('--doiboost', default=False, action='store_true', help="to run the queue")
+    parser.add_argument('--pubmed', default=False, action='store_true', help="run the pubmed import")
+    parser.add_argument('--doiboost', default=False, action='store_true', help="run the doiboost import")
+    parser.add_argument('--overwrite', default=True, action='store_true', help="overwrite existing")
+    parser.add_argument('--subset', nargs="?", type=str, help="subset of pubmed to pull in. valid responses: all, base, update")
 
     parsed_args = parser.parse_args()
     parsed_vars = vars(parsed_args)
     if parsed_vars["pubmed"]:
         lib_to_run = pubmed
+        subset = parsed_vars.get("subset", "all")
     elif parsed_vars["doiboost"]:
         lib_to_run = doiboost
 
@@ -37,7 +40,7 @@ if __name__ == "__main__":
     lib_to_run.create_db_tables()
 
     # Get file list on NCBI
-    gz_file_list = lib_to_run.get_file_list()
+    gz_file_list = lib_to_run.get_file_list(subset)
     random.shuffle(gz_file_list)  # so it'll work better in parallel
 
     for file_to_download in gz_file_list:
@@ -57,7 +60,7 @@ if __name__ == "__main__":
             parsed_articles = lib_to_run.parse(file_content)
 
             # store the results in the DB
-            lib_to_run.store_results(parsed_articles, file_to_download, file_downloaded)
+            lib_to_run.store_results(parsed_articles, file_to_download, file_downloaded, parsed_vars["overwrite"])
 
             lib_to_run.mark_as_finished(file_to_download)
             if file_to_download:

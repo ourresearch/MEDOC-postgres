@@ -89,10 +89,41 @@ def get_values(table_name, fields, insert_table):
                 values.append(value_to_append)
     return values
 
-def delete_existing(raw_articles):
+def get_pmids_from_raw_articles(raw_articles):
     pmids = []
     for raw_article in raw_articles:
         pmids += re.findall('<articleid idtype="pubmed">([0-9]*)</articleid>', str(raw_article), re.IGNORECASE)
+    return pmids
+
+def articles_not_yet_existing(raw_articles):
+    pmids = get_pmids_from_raw_articles(raw_articles)
+    if not pmids:
+        return []
+
+    print(len(pmids))
+
+    sql_command = u"select pmid from medline_citation WHERE pmid in ({});".format(u",".join(pmids))
+
+    pmids_already_in_db = Query_Executor().select(sql_command)
+    print(len(pmids_already_in_db))
+
+    pmids_to_save = [pmid for pmid in pmids if pmid not in pmids_already_in_db]
+
+    articles_to_save = []
+    for raw_article in raw_articles:
+        pmid_match = re.findall('<articleid idtype="pubmed">([0-9]*)</articleid>', str(raw_article), re.IGNORECASE)
+        if pmid_match[0] in pmids_to_save:
+            articles_to_save += raw_article
+
+    print(len(articles_to_save))
+
+    print(1/0)
+
+    return articles_to_save
+
+
+def delete_matching_from_db(raw_articles):
+    pmids = get_pmids_from_raw_articles(raw_articles)
     if not pmids:
         return
 
@@ -160,7 +191,7 @@ def create_db_tables():
     connection.close()
 
 
-def get_file_list():
+def get_file_list(subset="all"):
     print('- ' * 30 + 'EXTRACTING FILES LIST FROM PUBMED')
     #  Timestamp
     start_time = time.time()
@@ -176,19 +207,21 @@ def get_file_list():
 
     url = "https://ftp.ncbi.nlm.nih.gov"
 
-    # #  BASELINE
-    # r = requests.get(url + "/pubmed/baseline/")
-    # page = r.text
-    # matches = re.findall(regex_gz_html, page)
-    # for file_name in matches:
-    #     gz_file_list.append('baseline/' + file_name)
+    if subset in ["all", "base"]:
+        #  BASELINE
+        r = requests.get(url + "/pubmed/baseline/")
+        page = r.text
+        matches = re.findall(regex_gz_html, page)
+        for file_name in matches:
+            gz_file_list.append('baseline/' + file_name)
 
-    #  UPDATES
-    r = requests.get(url + "/pubmed/updatefiles/")
-    page = r.text
-    matches = re.findall(regex_gz_html, page)
-    for file_name in matches:
-        gz_file_list.append('updatefiles/' + file_name)
+    if subset in ["all", "update"]:
+        #  UPDATES
+        r = requests.get(url + "/pubmed/updatefiles/")
+        page = r.text
+        matches = re.findall(regex_gz_html, page)
+        for file_name in matches:
+            gz_file_list.append('updatefiles/' + file_name)
 
     print('{} files in the list'.format(len(gz_file_list)))
     print('Elapsed time: {} sec for module: get_file_list'.format(round(time.time() - start_time, 2)))
@@ -617,7 +650,7 @@ def build_insert_list(article_raw, gz):
     return article_INSERT_list
 
 
-def store_results(raw_articles, file_to_download, file_downloaded):
+def store_results(raw_articles, file_to_download, file_downloaded, overwrite):
     print('- ' * 30 + 'SQL INSERTION')
 
     #  Timestamp
@@ -633,13 +666,17 @@ def store_results(raw_articles, file_to_download, file_downloaded):
     articles_count = 0
     insert_limit = 1000
 
-    # Delete existing
-    print("deleting existing")
-    delete_existing(raw_articles)
-    print("done deleting existing")
+    if overwrite:
+        # Delete existing
+        print("deleting existing")
+        delete_matching_from_db(raw_articles)
+        articles_to_save = raw_articles
+        print("done deleting existing")
+    else:
+        articles_to_save = articles_not_yet_existing(raw_articles)
 
     # Create a dictionary with data to INSERT for every article
-    for raw_article in raw_articles:
+    for raw_article in articles_to_save:
 
         #  Loading
         articles_count += 1
@@ -656,7 +693,7 @@ def store_results(raw_articles, file_to_download, file_downloaded):
                     values_this_item = get_values(table_name, fields, insert_table)
                     values_tot[table_name].append(values_this_item)
 
-                    if (len(values_tot[table_name]) == insert_limit) or (articles_count == len(raw_articles)):
+                    if (len(values_tot[table_name]) == insert_limit) or (articles_count == len(articles_to_save)):
                         insert(table_name, fields, values_tot[table_name])
                         values_tot[table_name] = []
 
@@ -675,4 +712,5 @@ def store_results(raw_articles, file_to_download, file_downloaded):
 
     #  Flush RAM
     del raw_articles
+    del articles_to_save
     del values_tot
