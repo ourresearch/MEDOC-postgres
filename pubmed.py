@@ -117,8 +117,10 @@ def articles_not_yet_existing(raw_articles):
     articles_to_save = []
     for raw_article in raw_articles:
         pmid_match = re.findall('<articleid idtype="pubmed">([0-9]*)</articleid>', str(raw_article), re.IGNORECASE)
-        if pmid_match[0] in pmids_to_save:
-            articles_to_save += [raw_article]
+        if pmid_match:
+            print(pmid_match)
+            if pmid_match and pmid_match[0] in pmids_to_save:
+                articles_to_save += [raw_article]
 
     print("len(articles_to_save)")
     print(len(articles_to_save))
