@@ -42,25 +42,25 @@ def get_fields():
                                    'date_created', 'country', 'xml_file_name', 'medline_date', 'number_of_references',
                                    'data_bank_list_comp_yn', 'nlm_unique_id', 'abstract_text', 'citation_status',
                                    'grantlist_complete_yn', 'copyright_info', 'issue', 'journal_title', 'issn',
-                                   'pub_date_month', 'medline_ta']
+                                   'pub_date_month', 'medline_ta', 'doi', 'updated']
     fields["medline_raw_xml"] = ['pmid', 'raw_xml', 'updated']
-    fields["medline_article_language"] = ['pmid', 'language']
-    fields["medline_article_publication_type"] = ['pmid', 'publication_type']
-    fields["medline_affiliation"] = ['pmid', 'author_order', 'affiliation_order', 'affiliation']
+    fields["medline_article_language"] = ['pmid', 'language', 'updated']
+    fields["medline_article_publication_type"] = ['pmid', 'publication_type', 'updated']
+    fields["medline_affiliation"] = ['pmid', 'author_order', 'affiliation_order', 'affiliation', 'updated']
     fields["medline_author"] = ['pmid', 'author_order', 'last_name', 'fore_name', 'first_name', 'middle_name', 'initials', 'suffix',
-                             'affiliation', 'collective_name', 'orcid']
-    fields["medline_chemical_list"] = ['pmid', 'registry_number', 'name_of_substance']
-    fields["medline_citation_other_id"] = ['pmid', 'source', 'other_id']
-    fields["medline_citation_subsets"] = ['pmid', 'citation_subset']
-    fields["medline_comments_corrections"] = ['pmid', 'ref_pmid', 'type', 'ref_source']
-    fields["medline_data_bank"] = ['pmid', 'accession_number']
-    fields["medline_grant"] = ['pmid', 'grant_id', 'acronym', 'agency', 'country']
+                             'affiliation', 'collective_name', 'orcid', 'updated']
+    fields["medline_chemical_list"] = ['pmid', 'registry_number', 'name_of_substance', 'updated']
+    fields["medline_citation_other_id"] = ['pmid', 'source', 'other_id', 'updated']
+    fields["medline_citation_subsets"] = ['pmid', 'citation_subset', 'updated']
+    fields["medline_comments_corrections"] = ['pmid', 'ref_pmid', 'type', 'ref_source', 'updated']
+    fields["medline_data_bank"] = ['pmid', 'accession_number', 'updated']
+    fields["medline_grant"] = ['pmid', 'grant_id', 'acronym', 'agency', 'country', 'updated']
     fields["medline_investigator"] = ['pmid', 'last_name', 'fore_name', 'first_name', 'middle_name', 'initials', 'suffix',
-                                   'affiliation', 'orcid']
+                                   'affiliation', 'orcid', 'updated']
     fields["medline_mesh_heading"] = ['pmid', 'descriptor_name', 'descriptor_ui', 'descriptor_name_major_yn',
-                                   'qualifier_name', 'qualifier_ui', 'qualifier_name_major_yn']
+                                   'qualifier_name', 'qualifier_ui', 'qualifier_name_major_yn', 'updated']
     fields["medline_personal_name_subject"] = ['pmid', 'last_name', 'fore_name', 'first_name', 'middle_name', 'initials',
-                                            'suffix', 'orcid']
+                                            'suffix', 'orcid', 'updated']
     return fields
 
 
@@ -68,25 +68,29 @@ def get_values(table_name, fields, insert_table):
     values = []
     # For every fields
     for field in fields:
-        for key, value in insert_table['value'].items():
-            # If parsed value field == actual field
-            if field == key:
-                if value or str(value)=="0":
-                    if isinstance(value, int):
-                        value_to_append = value
-                    elif value == [None]:
-                        value_to_append = "NULL"
+        if field == 'updated':
+            value_to_append = datetime.datetime.utcnow().isoformat()
+            values.append(value_to_append)
+        else:
+            for key, value in insert_table['value'].items():
+                # If parsed value field == actual field
+                if field == key:
+                    if value or str(value)=="0":
+                        if isinstance(value, int):
+                            value_to_append = value
+                        elif value == [None]:
+                            value_to_append = "NULL"
+                        else:
+                            extracted_value = list(value)[0]
+                            value_to_append = u"'{}'".format(extracted_value)
                     else:
-                        extracted_value = list(value)[0]
-                        value_to_append = u"'{}'".format(extracted_value)
-                else:
-                    if field != "pmid":
-                        value_to_append = "NULL"
-                    else:
-                        break
-                        print("error: pmid can't be None")
-                # Add it to a list
-                values.append(value_to_append)
+                        if field != "pmid":
+                            value_to_append = "NULL"
+                        else:
+                            break
+                            print("error: pmid can't be None")
+                    # Add it to a list
+                    values.append(value_to_append)
     return values
 
 def get_pmids_from_raw_articles(raw_articles):
@@ -102,24 +106,18 @@ def articles_not_yet_existing(raw_articles):
         return []
 
     pmids_set = set(pmids)
-    print("pmids from raw articles")
-    print(len(pmids_set))
-    print(pmids[0:25])
+    print("pmids from raw articles", len(pmids_set))
 
     sql_command = u"select pmid from medline_citation WHERE pmid in ({});".format(u",".join(pmids))
 
     rows = Query_Executor().select(sql_command)
     pmids_already_in_db = [str(row[0]) for row in rows]
     pmids_already_in_db_set = set(pmids_already_in_db)
-    print("pmids pmids_already_in_db")
-    print(len(pmids_already_in_db_set))
-    print(pmids_already_in_db[0])
-    print(pmids_already_in_db[0:25])
+    print("pmids pmids_already_in_db", len(pmids_already_in_db_set))
 
     # pmids_to_save = [pmid for pmid in pmids if pmid not in pmids_already_in_db]
     pmids_to_save_set = pmids_set - pmids_already_in_db_set
-    print("pmids pmids_to_save")
-    print(len(pmids_to_save_set))
+    print("pmids pmids_to_save", len(pmids_to_save_set))
 
     articles_to_save = []
     for raw_article in raw_articles:
@@ -129,8 +127,7 @@ def articles_not_yet_existing(raw_articles):
             if pmid_match and pmid_match[0] in pmids_to_save_set:
                 articles_to_save += [raw_article]
 
-    print("len(articles_to_save)")
-    print(len(articles_to_save))
+    print("len(articles_to_save)", len(articles_to_save))
 
     return articles_to_save
 
@@ -445,8 +442,7 @@ def build_insert_list(article_raw, gz):
     article_INSERT_list.append(
         {'name': 'medline_raw_xml',
          'value': {'pmid': pmid_primary_key,
-                   'raw_xml': [str(article_raw)],
-                   'updated': [datetime.datetime.utcnow().isoformat()]}
+                   'raw_xml': [str(article_raw)]}
          })
 
     ''' - - - - - - - - - - - - - -
@@ -710,6 +706,7 @@ def store_results(raw_articles, file_to_download, file_downloaded, skip_existing
                     if (len(values_tot[table_name]) == insert_limit) or (articles_count == len(articles_to_save)):
                         insert(table_name, fields, values_tot[table_name])
                         values_tot[table_name] = []
+
 
     # Write the remaining entries
     for (table_name, fields) in table_fields_lookup.items():
