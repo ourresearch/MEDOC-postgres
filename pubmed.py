@@ -42,7 +42,7 @@ def get_fields():
                                    'date_created', 'country', 'xml_file_name', 'medline_date', 'number_of_references',
                                    'data_bank_list_comp_yn', 'nlm_unique_id', 'abstract_text', 'citation_status',
                                    'grantlist_complete_yn', 'copyright_info', 'issue', 'journal_title', 'issn',
-                                   'pub_date_month', 'medline_ta', 'doi', 'updated']
+                                   'pub_date_month', 'medline_ta', 'updated']
     fields["medline_raw_xml"] = ['pmid', 'raw_xml', 'updated']
     fields["medline_article_language"] = ['pmid', 'language', 'updated']
     fields["medline_article_publication_type"] = ['pmid', 'publication_type', 'updated']
