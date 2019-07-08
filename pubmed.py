@@ -69,7 +69,8 @@ def get_values(table_name, fields, insert_table):
     # For every fields
     for field in fields:
         if field == 'updated':
-            value_to_append = datetime.datetime.utcnow().isoformat()
+            now = datetime.datetime.utcnow().isoformat()
+            value_to_append = u"'{}'".format(now)
             values.append(value_to_append)
         else:
             for key, value in insert_table['value'].items():
