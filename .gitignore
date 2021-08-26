@@ -2,7 +2,8 @@
 
 .idea/
 
-log/
+log/errors.log
+tests/data/*
 download_cache/
 tests/data
 
