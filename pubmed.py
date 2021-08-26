@@ -20,7 +20,6 @@ import gzip
 import configparser
 import requests
 import datetime
-from bs4 import BeautifulSoup
 import urllib.parse
 import psycopg2
 from sql_helper import Query_Executor

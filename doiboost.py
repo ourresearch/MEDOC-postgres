@@ -18,7 +18,6 @@ import gzip
 import configparser
 import requests
 import datetime
-from bs4 import BeautifulSoup
 import urllib.parse
 import psycopg2
 from sql_helper import Query_Executor
@@ -167,12 +166,16 @@ def mark_as_started(file_name):
             FROM  admin_inserted_files
             where filename = '{}' and started is not null""".format(file_name)
 
+            # where filename = '{}' and started is not null and finished is not null""".format(file_name)
+
     #  Check if already INSERTED before
     rows_already_running = Query_Executor().select(q)
     if rows_already_running:
         return False  # not still available
 
     # add to inserted list
+    # Query_Executor().execute("delete admin_inserted_files where filename = '{}')".format(file_name))
+
     Query_Executor().execute("insert into admin_inserted_files values ('{}', now(), NULL)".format(file_name))
 
     return True  # this filename is now in queue
