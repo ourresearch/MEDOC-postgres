@@ -2,8 +2,9 @@
 
 .idea/
 
-log/errors.log
-tests/data/*
+lib/
+log/
 download_cache/
 tests/data
+pubmed_data/
 
