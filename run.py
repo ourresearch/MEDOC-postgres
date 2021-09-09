@@ -21,6 +21,29 @@ import pubmed
 import doiboost
 import sql_helper
 import requests
+import gzip
+
+def break_into_xml_rows(local_file):
+    xmlrows_local_file = local_file.replace("/pubmed21", "/xmlrows_pubmed21")
+    from pubmed import download_folder
+
+    print("getting ready to break_into_xml_rows", local_file)
+    print(xmlrows_local_file)
+
+    local_file_with_path = "{}{}".format(download_folder, local_file)
+    xmlrows_local_file_with_path = "{}{}".format(download_folder, xmlrows_local_file)
+
+    with gzip.open(local_file, "rt") as f:
+        content = f.read()
+        no_newlines = content.replace("\n", "")
+        newlines_on_records = no_newlines.replace("<PubmedArticle>", "\n\n<PubmedArticle>")
+        newlines_on_records = newlines_on_records.replace("</PubmedArticle>", "</PubmedArticle>\n\n")
+
+    with gzip.open(xmlrows_local_file, "wt") as f:
+        f.write(newlines_on_records)
+
+    return xmlrows_local_file
+
 
 def upload_to_s3(filename, local_file):
     import boto3
@@ -32,11 +55,11 @@ def upload_to_s3(filename, local_file):
 
     print("have s3 client")
 
-    bucket_name = "openalex-sandbox"
+    bucket_name = "ricks-redshift"
     local_file_with_path = "{}{}".format(download_folder, local_file)
     print(local_file_with_path)
-    s3_client.upload_file(local_file_with_path, bucket_name, filename)
-    print("file now at", "s3://{}/{}".format(bucket_name, filename))
+    s3_client.upload_file(local_file_with_path, bucket_name, "pubmed_ftp/{}".format(filename))
+    print("file now at", "s3://{}/pubmed_ftp/{}".format(bucket_name, filename))
 
 
 if __name__ == "__main__":
@@ -88,7 +111,15 @@ if __name__ == "__main__":
 
         local_file = lib_to_run.download(file_name=filename_to_download)
         print(local_file)
+
+        print(filename_to_download, local_file)
         upload_to_s3(filename_to_download, local_file)
+
+        xmlrows_local_file = break_into_xml_rows(local_file)
+        xmlrows_filename_to_download = filename_to_download.replace("/pubmed21", "/xmlrows_pubmed21")
+        print(xmlrows_filename_to_download, xmlrows_local_file)
+        upload_to_s3(xmlrows_filename_to_download, xmlrows_local_file)
+
         files_uploaded +=1
         print("files uploaded: {}".format(files_uploaded))
 
